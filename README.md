@@ -1,2 +1,5 @@
 # django-reboot
-Reboot on Reviewing Django
+## Reboot - Reviewing Django
+
+
+- made with ❤️ by edchelstephens

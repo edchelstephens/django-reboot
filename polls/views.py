@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from polls.models import Question
 
 
 def detail(request, question_id):
@@ -15,4 +16,6 @@ def vote(request, question_id):
 
 
 def index(request):
-    return HttpResponse("Hello visitor. You're at the poll index")
+    latest_question_list = Question.objects.order_by("-pub_date")[:5]
+    output = ", ".join([q.question_text for q in latest_question_list])
+    return HttpResponse(output)

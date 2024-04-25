@@ -24,7 +24,7 @@ class QuestionModelTests(TestCase):
 
     def test_was_published_recently_returns_True_for_todays_recent_publication(self):
         """was_published_recently() returns True for recent publication."""
-        an_hour_ago = timezone.now() - datetime.timedelta(hour=1)
+        an_hour_ago = timezone.now() - datetime.timedelta(hours=1)
         recent_question = Question(pub_date=an_hour_ago)
 
         self.assertTrue(recent_question.was_published_recently())

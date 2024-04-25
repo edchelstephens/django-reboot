@@ -2,6 +2,7 @@ import datetime
 
 from django.test import TestCase
 from django.utils import timezone
+from django.urls import reverse
 
 from polls.models import Question
 
@@ -28,3 +29,20 @@ class QuestionModelTests(TestCase):
         recent_question = Question(pub_date=an_hour_ago)
 
         self.assertTrue(recent_question.was_published_recently())
+
+
+def create_questions(question_text, days):
+    """Create a question with question text and days offset to timezone.now()"""
+    pub_date = timezone.now() + datetime.timedelta(days=days)
+    return Question.objects.create(question_text=question_text, pub_date=pub_date)
+
+
+class QuestionIndexViewTest(TestCase):
+
+    def test_no_questions_displays_no_question_message(self):
+        """The index page should display appropriate message with no latest questions."""
+        response = self.client.get(reverse("polls:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No polls are available")
+
+        self.assertQuerySetEqual(response.context["latest_question_list"], [])

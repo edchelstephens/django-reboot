@@ -31,7 +31,7 @@ class QuestionModelTests(TestCase):
         self.assertTrue(recent_question.was_published_recently())
 
 
-def create_questions(question_text, days):
+def create_question(question_text, days):
     """Create a question with question text and days offset to timezone.now()"""
     pub_date = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, pub_date=pub_date)
@@ -46,3 +46,11 @@ class QuestionIndexViewTest(TestCase):
         self.assertContains(response, "No polls are available")
 
         self.assertQuerySetEqual(response.context["latest_question_list"], [])
+
+    def test_past_question_gets_displayed_on_index(self):
+        """Past published question are displayed on the index page."""
+        question = create_question(question_text="Past Question", days=-1)
+        response = self.client.get(reverse("polls:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Past Question")
+        self.assertQuerySetEqual(response.context["latest_question_list"], [question])

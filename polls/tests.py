@@ -14,3 +14,10 @@ class QuestionModelTests(TestCase):
         future_question = Question(pub_date=month_from_now)
 
         self.assertFalse(future_question.was_published_recently())
+
+    def test_was_published_recently_with_old_question(self):
+        "was_published_recently() returns False for pub_date older than 1 day."
+        the_other_day = timezone.now() - datetime.timedelta(days=1, seconds=1)
+        old_question = Question(pub_date=the_other_day)
+
+        self.assertFalse(old_question.was_published_recently())

@@ -75,3 +75,17 @@ class QuestionIndexViewTest(TestCase):
         self.assertQuerySetEqual(
             response.context["latest_question_list"], [past_question]
         )
+
+    def test_two_past_questions_all_gets_displayed(self):
+        """Two recent questions gets displayed."""
+
+        question1 = create_question(question_text="Question 1", days=-1)
+        question2 = create_question(question_text="Question 2", days=-2)
+
+        response = self.client.get(reverse("polls:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, question1.question_text)
+        self.assertContains(response, question2.question_text)
+        self.assertQuerySetEqual(
+            response.context["latest_question_list"], [question1, question2]
+        )

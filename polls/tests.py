@@ -89,3 +89,41 @@ class QuestionIndexViewTest(TestCase):
         self.assertQuerySetEqual(
             response.context["latest_question_list"], [question1, question2]
         )
+
+    def test_only_latest_5_questions_posted(self):
+        """Only the latest 5 questions are posted on index."""
+
+        question1 = create_question(question_text="Question 1", days=-1)
+        question2 = create_question(question_text="Question 2", days=-2)
+
+        question3 = create_question(question_text="Question 3", days=-3)
+        question4 = create_question(question_text="Question 4", days=-4)
+
+        question5 = create_question(question_text="Question 5", days=-5)
+        question6 = create_question(question_text="Question 6", days=-6)
+
+        question7 = create_question(question_text="Question 7", days=-7)
+        question8 = create_question(question_text="Question 8", days=-8)
+
+        question9 = create_question(question_text="Question 9", days=-9)
+        question10 = create_question(question_text="Question 10", days=-10)
+
+        response = self.client.get(reverse("polls:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, question1.question_text)
+        self.assertContains(response, question2.question_text)
+        self.assertContains(response, question3.question_text)
+        self.assertContains(response, question4.question_text)
+        self.assertContains(response, question5.question_text)
+
+        self.assertNotContains(response, question6.question_text)
+        self.assertNotContains(response, question7.question_text)
+        self.assertNotContains(response, question8.question_text)
+        self.assertNotContains(response, question9.question_text)
+        self.assertNotContains(response, question10.question_text)
+
+        self.assertQuerySetEqual(
+            response.context["latest_question_list"],
+            [question1, question2, question3, question4, question5],
+        )

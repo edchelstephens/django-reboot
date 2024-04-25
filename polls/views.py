@@ -1,5 +1,6 @@
 from typing import Any
 from django.db.models import F
+from django.utils import timezone
 from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from polls.models import Question, Choice
@@ -34,7 +35,10 @@ class IndexView(generic.ListView):
     context_object_name = "latest_question_list"
 
     def get_queryset(self) -> QuerySet[Any]:
-        return Question.objects.order_by("-pub_date")[:5]
+        """Return the 5 latest published questions."""
+        return Question.objects.filter(pub_date__lte=timezone.now()).order_by(
+            "-pub_date"
+        )[:5]
 
 
 class DetailView(generic.DetailView):

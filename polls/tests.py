@@ -52,5 +52,13 @@ class QuestionIndexViewTest(TestCase):
         question = create_question(question_text="Past Question", days=-1)
         response = self.client.get(reverse("polls:index"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Past Question")
+        self.assertContains(response, question.question_text)
         self.assertQuerySetEqual(response.context["latest_question_list"], [question])
+
+    def test_future_question_does_not_get_displayed_on_index(self):
+        """Future publish date questions are not displayed on index."""
+        future_question = create_question(question_text="Future question", days=30)
+        response = self.client.get(reverse("polls:index"))
+
+        self.assertNotIn(future_question.question_text, response)
+        self.assertQuerySetEqual(response.context["latest_question_list"], [])

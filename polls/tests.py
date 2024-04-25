@@ -127,3 +127,13 @@ class QuestionIndexViewTest(TestCase):
             response.context["latest_question_list"],
             [question1, question2, question3, question4, question5],
         )
+
+
+class QuestionDetailViewTest(TestCase):
+
+    def test_future_question(self):
+        """Future questions should not be displayed."""
+        future_question = create_question(question_text="Future question", days=30)
+        url = reverse("polls:detail", args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)

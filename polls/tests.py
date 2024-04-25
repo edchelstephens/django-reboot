@@ -62,3 +62,16 @@ class QuestionIndexViewTest(TestCase):
 
         self.assertNotIn(future_question.question_text, response)
         self.assertQuerySetEqual(response.context["latest_question_list"], [])
+
+    def test_future_and_past_questions_only_past_questions_gets_displayed(self):
+        """Only past questions are to be posted in the index page"""
+        future_question = create_question(question_text="Future question", days=30)
+        past_question = create_question(question_text="Past question", days=-1)
+        response = self.client.get(reverse("polls:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, future_question.question_text)
+        self.assertContains(response, past_question.question_text)
+        self.assertQuerySetEqual(
+            response.context["latest_question_list"], [past_question]
+        )
